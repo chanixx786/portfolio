@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import {ThemeModeScript} from 'flowbite-react';
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -24,15 +23,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <head>
-        <ThemeModeScript/>
-      </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }
