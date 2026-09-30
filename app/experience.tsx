@@ -43,7 +43,7 @@ export default function Experience() {
     <div className="flex w-full flex-col gap-12 text-left">
       <div className="flex flex-col gap-2">
         <h1 className=" text-2xl font-bold uppercase tracking-widest">
-          Selected Projects
+          EXPERIENCE
         </h1>
         <p className="text-sm text-foreground/60">
           A list of my professional experience and skills.
