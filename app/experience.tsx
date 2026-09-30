@@ -29,9 +29,9 @@ function Node({ small = false }: { small?: boolean }) {
 
 export default function Experience() {
   return (
-    <div className="flex w-full flex-col gap-8 text-left">
+    <div className="flex w-full flex-col gap-12 text-left">
       <div className="flex flex-col gap-2">
-        <h2 className="text-lg font-maven-pro font-bold text-foreground">
+        <h2 className="text-lg font-maven-pro text-foreground">
           EXPERIENCE
         </h2>
         <p className="text-sm text-foreground/60">
