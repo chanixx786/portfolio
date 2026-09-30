@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { Mail } from "lucide-react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
-import { Badge } from "@/components/ui/badge";
 import Experience from "./experience";
 
 const socials = [
@@ -24,9 +23,34 @@ const socials = [
   },
 ];
 
-const experience = [
-  { label: "Software Developer Intern" },
-  { label: "Technical Training Instructor" },
+// Moodboard images
+const moodboard = [
+  {
+    src: "/moodboard/code.jpg",
+    alt: "Coding",
+    className: "col-span-2 row-span-2",
+  },
+  {
+    src: "/moodboard/design.jpg",
+    alt: "Design",
+    className: "col-span-1 row-span-1",
+  },
+  {
+    src: "/moodboard/coffee.jpg",
+    alt: "Coffee",
+    className: "col-span-1 row-span-1",
+  },
+  {
+    src: "/moodboard/music.jpg",
+    alt: "Music",
+    className: "col-span-1 row-span-2",
+  },
+  {
+    src: "/moodboard/setup.jpg",
+    alt: "Workspace",
+    className: "col-span-1 row-span-1",
+  },
+
 ];
 
 export default function Home() {
@@ -47,6 +71,7 @@ export default function Home() {
       <main className="relative z-10">
         <section className="flex min-h-svh items-center justify-center overflow-hidden px-6 py-24">
           <div className="mx-auto flex w-full max-w-5xl flex-col items-center gap-12 text-center md:flex-row md:items-center md:justify-center md:gap-16">
+            
             {/* Left */}
             <div className="flex w-full max-w-xl flex-col gap-12 md:text-left">
               <div>
@@ -55,17 +80,19 @@ export default function Home() {
                 </p>
 
                 <h1 className="mt-2 text-balance text-4xl font-bold tracking-tight font-maven-pro text-foreground sm:text-5xl lg:text-6xl">
-                  <span className="text-foreground/60 ">Christian</span> Tabanao
+                  <span className="text-foreground/60">Christian</span>{" "}
+                  Tabanao
                 </h1>
               </div>
 
-              <div className="gap-12 flex flex-col items-center md:items-start">
+              <div className="flex flex-col items-center gap-12 md:items-start">
                 <p className="max-w-2xl text-pretty text-base leading-relaxed text-foreground/60 md:text-sm">
-                  I enjoy exploring new ideas, building meaningful projects, and
-                  finding practical solutions to problems. I&apos;m always
+                  I enjoy exploring new ideas, building meaningful projects,
+                  and finding practical solutions to problems. I&apos;m always
                   looking for opportunities to learn, grow, and turn ideas into
                   something useful.
                 </p>
+
                 <div className="flex flex-col items-center gap-3 md:items-start">
                   <p className="text-sm text-foreground/60">
                     Find me online
@@ -96,19 +123,33 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right */}
-            <div className="flex w-full max-w-sm flex-col gap-8">
-              {/* Experience */}
-              <div className="flex flex-wrap justify-center gap-2 md:justify-start">
-                {experience.map((exp) => (
-                  <Badge key={exp.label} variant="outline">
-                    {exp.label}
-                  </Badge>
+            {/* Moodboard [Projects] */}
+            <div className="w-full max-w-sm">
+              <div className="grid auto-rows-[100px] grid-cols-3 gap-2">
+                {moodboard.map((item) => (
+                  <div
+                    key={item.src}
+                    className={`group relative overflow-hidden rounded-xl border border-border bg-muted ${item.className}`}
+                  >
+                    <img
+                      src={item.src}
+                      alt={item.alt}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+                    <span className="absolute bottom-2 left-2 text-xs font-medium text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                      {item.alt}
+                    </span>
+                  </div>
                 ))}
               </div>
             </div>
           </div>
         </section>
+
+        {/* Experience Section */}
         <section className="flex min-h-svh items-start justify-center overflow-hidden px-6 py-24">
           <div className="mx-auto flex w-full max-w-5xl flex-col items-center gap-12 text-center md:flex-row md:items-center md:justify-center md:gap-16">
             <Experience />
