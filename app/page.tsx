@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Mail } from "lucide-react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import Experience from "./experience";
+import { useEffect, useState } from "react";
+import { fetchProjects, type Project } from "@/lib/project";
 
 const socials = [
   {
@@ -23,37 +25,33 @@ const socials = [
   },
 ];
 
-// Moodboard images
-const moodboard = [
-  {
-    src: "/moodboard/code.jpg",
-    alt: "Coding",
-    className: "col-span-2 row-span-2",
-  },
-  {
-    src: "/moodboard/design.jpg",
-    alt: "Design",
-    className: "col-span-1 row-span-1",
-  },
-  {
-    src: "/moodboard/coffee.jpg",
-    alt: "Coffee",
-    className: "col-span-1 row-span-1",
-  },
-  {
-    src: "/moodboard/music.jpg",
-    alt: "Music",
-    className: "col-span-1 row-span-2",
-  },
-  {
-    src: "/moodboard/setup.jpg",
-    alt: "Workspace",
-    className: "col-span-1 row-span-1",
-  },
-
+const PATTERN = [
+  "col-span-2 row-span-2",
+  "col-span-1 row-span-1",
+  "col-span-1 row-span-1",
+  "col-span-1 row-span-2",
+  "col-span-1 row-span-1",
+  "col-span-1 row-span-2",
+  "col-span-1 row-span-1",
+  "col-span-3 row-span-1",
 ];
 
+const tileClass = (i: number) => PATTERN[i % PATTERN.length];
+
+// Set a number to cap how many tiles show on the home page
+const MAX_TILES = Infinity;
+
 export default function Home() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProjects()
+      .then(setProjects)
+      .catch(() => setProjects([]))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <div className="relative min-h-svh text-foreground">
       <header>
@@ -71,7 +69,6 @@ export default function Home() {
       <main className="relative z-10">
         <section className="flex min-h-svh items-center justify-center overflow-hidden px-6 py-24">
           <div className="mx-auto flex w-full max-w-5xl flex-col items-center gap-12 text-center md:flex-row md:items-center md:justify-center md:gap-16">
-            
             {/* Left */}
             <div className="flex w-full max-w-xl flex-col gap-12 md:text-left">
               <div>
@@ -79,24 +76,21 @@ export default function Home() {
                   Hi, I&apos;m
                 </p>
 
-                <h1 className="mt-2 text-balance text-4xl font-bold tracking-tight font-maven-pro text-foreground sm:text-5xl lg:text-6xl">
-                  <span className="text-foreground/60">Christian</span>{" "}
-                  Tabanao
+                <h1 className="mt-2 text-balance text-xl tracking-widest font-bold tracking-tight font-maven-pro text-foreground sm:text-5xl">
+                  <span className="text-foreground/60">Christian</span> Tabanao
                 </h1>
               </div>
 
               <div className="flex flex-col items-center gap-12 md:items-start">
                 <p className="max-w-2xl text-pretty text-base leading-relaxed text-foreground/60 md:text-sm">
-                  I enjoy exploring new ideas, building meaningful projects,
-                  and finding practical solutions to problems. I&apos;m always
+                  I enjoy exploring new ideas, building meaningful projects, and
+                  finding practical solutions to problems. I&apos;m always
                   looking for opportunities to learn, grow, and turn ideas into
                   something useful.
                 </p>
 
                 <div className="flex flex-col items-center gap-3 md:items-start">
-                  <p className="text-sm text-foreground/60">
-                    Find me online
-                  </p>
+                  <p className="text-sm text-foreground/60">Find me online</p>
 
                   <ul className="flex items-center gap-3">
                     {socials.map(({ label, href, icon: Icon }) => (
@@ -125,25 +119,35 @@ export default function Home() {
 
             {/* Moodboard [Projects] */}
             <div className="w-full max-w-sm">
-              <div className="grid auto-rows-[100px] grid-cols-3 gap-2">
-                {moodboard.map((item) => (
-                  <div
-                    key={item.src}
-                    className={`group relative overflow-hidden rounded-xl border border-border bg-muted ${item.className}`}
-                  >
-                    <img
-                      src={item.src}
-                      alt={item.alt}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
+              <div className="grid auto-rows-[100px] grid-flow-dense grid-cols-3 gap-2">
+                {loading
+                  ? PATTERN.map((className, i) => (
+                      <div
+                        key={i}
+                        className={`animate-pulse rounded-xl bg-muted ${className}`}
+                      />
+                    ))
+                  : projects.slice(0, MAX_TILES).map((project, i) => (
+                      <Link
+                        key={project.slug}
+                        href={`/project?repo=${encodeURIComponent(project.slug)}`}
+                        className={`group relative overflow-hidden rounded-xl bg-muted shadow shadow-2xl ${tileClass(i)}`}
+                      >
+                        {project.image && (
+                          <img
+                            src={project.image}
+                            alt={project.title}
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                        )}
 
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
-                    <span className="absolute bottom-2 left-2 text-xs font-medium text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      {item.alt}
-                    </span>
-                  </div>
-                ))}
+                        <span className="absolute bottom-2 left-2 text-xs font-medium text-white uppercase tracking-widest opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                          {project.title}
+                        </span>
+                      </Link>
+                    ))}
               </div>
             </div>
           </div>

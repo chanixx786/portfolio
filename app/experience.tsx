@@ -4,7 +4,7 @@ const experiences = [
   {
     role: "Software Developer Intern",
     company: "SugboDoc",
-    period: "5 months",
+    period: "Jan 2026 - May 2026",
     points: [
       " Gained practical understanding of the Software Development Life Cycle (SDLC), including requirements gathering, development, testing, deployment, and maintenance.",
       "Managed tasks, sprints, and issue tracking using Jira within an Agile software development workflow.",
@@ -12,6 +12,17 @@ const experiences = [
       " Integrated Figma design workflows with Git and GitHub to streamline version control and improve design-to-development handoff.",
     ],
     stack: ["Figma", "Docker", "Git", "Github", "Jira"],
+  },
+  {
+    role: "Technical Training Instructor",
+    company: "",
+    period: "Aug 2025 - Oct 2025",
+    points: [
+      "Assisted in delivering the BarangayConnect Training Program, helping residents become familiar with digital tools and applications.",
+      "Explained system functions and guided users through common tasks within the barangay management system.",
+      "Supported practical training activities aimed at enhancing basic computer and system usage skills.",
+    ],
+    stack: [],
   },
 ];
 
@@ -31,9 +42,9 @@ export default function Experience() {
   return (
     <div className="flex w-full flex-col gap-12 text-left">
       <div className="flex flex-col gap-2">
-        <h2 className="text-lg font-maven-pro text-foreground">
-          EXPERIENCE
-        </h2>
+        <h1 className=" text-2xl font-bold uppercase tracking-widest">
+          Selected Projects
+        </h1>
         <p className="text-sm text-foreground/60">
           A list of my professional experience and skills.
         </p>
