@@ -7,6 +7,7 @@ import Experience from "./experience";
 import Contact from "./contact";
 import { useEffect, useState } from "react";
 import { fetchProjects, type Project } from "@/lib/project";
+import { Reveal } from "@/components/reveal";
 
 const socials = [
   {
@@ -41,10 +42,41 @@ const tileClass = (i: number) => PATTERN[i % PATTERN.length];
 
 // Set a number to cap how many tiles show on the home page
 const MAX_TILES = Infinity;
+const COLS = 3;
+const ROW_DELAY = 250; // ms added per row
+const COL_DELAY = 120;
+
+function gridPositions(count: number) {
+  const taken = new Set<string>();
+
+  const fits = (r: number, c: number, cs: number, rs: number) => {
+    if (c + cs > COLS) return false;
+    for (let y = r; y < r + rs; y++)
+      for (let x = c; x < c + cs; x++) if (taken.has(`${y}-${x}`)) return false;
+    return true;
+  };
+
+  return Array.from({ length: count }, (_, i) => {
+    const cls = tileClass(i);
+    const cs = Number(cls.match(/col-span-(\d)/)?.[1] ?? 1);
+    const rs = Number(cls.match(/row-span-(\d)/)?.[1] ?? 1);
+
+    for (let r = 0; ; r++) {
+      for (let c = 0; c < COLS; c++) {
+        if (fits(r, c, cs, rs)) {
+          for (let y = r; y < r + rs; y++)
+            for (let x = c; x < c + cs; x++) taken.add(`${y}-${x}`);
+          return { row: r, col: c };
+        }
+      }
+    }
+  });
+}
 
 export default function Home() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const positions = gridPositions(projects.length);
 
   useEffect(() => {
     fetchProjects()
@@ -129,25 +161,33 @@ export default function Home() {
                       />
                     ))
                   : projects.slice(0, MAX_TILES).map((project, i) => (
-                      <Link
+                      <Reveal
                         key={project.slug}
-                        href={`/project?repo=${encodeURIComponent(project.slug)}`}
-                        className={`group relative overflow-hidden rounded-xl bg-muted shadow shadow-2xl ${tileClass(i)}`}
+                        delay={
+                          positions[i].row * ROW_DELAY +
+                          positions[i].col * COL_DELAY
+                        }
+                        duration={1000}
                       >
-                        {project.image && (
-                          <img
-                            src={project.image}
-                            alt={project.title}
-                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                          />
-                        )}
+                        <Link
+                          href={`/project?repo=${encodeURIComponent(project.slug)}`}
+                          className={`group relative overflow-hidden rounded-xl bg-muted shadow shadow-2xl ${tileClass(i)}`}
+                        >
+                          {project.image && (
+                            <img
+                              src={project.image}
+                              alt={project.title}
+                              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                          )}
 
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
-                        <span className="absolute bottom-2 left-2 text-xs font-medium text-white uppercase tracking-widest opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                          {project.title}
-                        </span>
-                      </Link>
+                          <span className="absolute bottom-2 left-2 text-xs font-medium text-white uppercase tracking-widest opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                            {project.title}
+                          </span>
+                        </Link>
+                      </Reveal>
                     ))}
               </div>
             </div>
@@ -156,15 +196,17 @@ export default function Home() {
 
         {/* Experience Section */}
         <section className="flex min-h-svh items-start justify-center overflow-hidden px-6 py-24">
-          <div className="mx-auto flex w-full max-w-5xl flex-col items-center gap-12 text-center md:flex-row md:items-center md:justify-center md:gap-16">
-            <Experience />
-          </div>
+          <Reveal delay={300}>
+            <div className="mx-auto flex w-full max-w-5xl flex-col items-center gap-12 text-center md:flex-row md:items-center md:justify-center md:gap-16">
+              <Experience />
+            </div>
+          </Reveal>
         </section>
 
         <section className="flex min-h-svh items-center justify-center">
           <div
             id="contact"
-            className="flex min-h-[50svh] w-full items-center justify-center text-center text-white"
+            className="flex min-h-[50svh] w-full items-center justify-center text-center"
           >
             <Contact />
           </div>
