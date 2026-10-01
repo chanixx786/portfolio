@@ -4,10 +4,11 @@ import Link from "next/link";
 import { Mail } from "lucide-react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import Experience from "./experience";
-import Contact from "./contact";
 import { useEffect, useState } from "react";
 import { fetchProjects, type Project } from "@/lib/project";
 import { Reveal } from "@/components/reveal";
+import Certificate from "./certificate";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const socials = [
   {
@@ -88,7 +89,7 @@ export default function Home() {
   return (
     <div className="relative min-h-svh text-foreground">
       <header>
-        <div className="absolute inset-x-0 top-0 z-10 flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="absolute inset-x-0 top-0 z-50 flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link
             href="/"
             className="flex items-center gap-2 text-lg font-semibold"
@@ -96,6 +97,8 @@ export default function Home() {
             <img src="/logo.svg" alt="Logo" width={40} height={40} />
             <span className="font-bold">TABS</span>
           </Link>
+
+          <ThemeToggle />
         </div>
       </header>
 
@@ -202,18 +205,55 @@ export default function Home() {
             </div>
           </Reveal>
         </section>
-
-        <section className="flex min-h-svh items-center justify-center">
-          <div
-            id="contact"
-            className="flex min-h-[50svh] w-full items-center justify-center text-center"
-          >
-            <Contact />
-          </div>
+        <section className="flex min-h-svh justify-center overflow-hidden px-6 py-24">
+          <Reveal delay={300}>
+            <div className="mx-auto flex w-full max-w-5xl flex-col">
+              <Certificate />
+            </div>
+          </Reveal>
         </section>
-
-        <footer></footer>
       </main>
+      <footer id="contact" className="relative z-10 w-full text-white">
+        <div className="mx-auto w-full max-w-5xl py-16">
+          {/* Bottom bar */}
+          <div className="mx-6 flex flex-col gap-6 border-t border-white/10 pt-8 text-sm md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-col gap-1">
+              <span className="font-bold tracking-widest">TABS</span>
+              <span className="text-white/60">
+                Christian Tabanao · Cebu City, Philippines
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <span className="text-xs uppercase tracking-widest text-white/60">
+                Email
+              </span>
+              <a
+                href="mailto:christabanao331@gmail.com"
+                className="transition-colors hover:text-violet-400"
+              >
+                christabanao331@gmail.com
+              </a>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <span className="text-xs uppercase tracking-widest text-white/60">
+                Explore
+              </span>
+              <Link
+                href="/project"
+                className="transition-colors hover:text-violet-400"
+              >
+                Projects
+              </Link>
+            </div>
+          </div>
+
+          <p className="mx-6 mt-8 text-xs text-white/40">
+            © {new Date().getFullYear()} Christian Tabanao. All rights reserved.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
