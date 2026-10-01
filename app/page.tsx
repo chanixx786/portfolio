@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Mail } from "lucide-react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import Experience from "./experience";
+import Contact from "./contact";
 import { useEffect, useState } from "react";
 import { fetchProjects, type Project } from "@/lib/project";
 
@@ -159,6 +160,17 @@ export default function Home() {
             <Experience />
           </div>
         </section>
+
+        <section className="flex min-h-svh items-center justify-center">
+          <div
+            id="contact"
+            className="flex min-h-[50svh] w-full items-center justify-center text-center text-white"
+          >
+            <Contact />
+          </div>
+        </section>
+
+        <footer></footer>
       </main>
     </div>
   );

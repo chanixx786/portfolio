@@ -5,6 +5,9 @@ import { Delaunay } from "d3-delaunay";
 
 type Node = { x: number; y: number; vx: number; vy: number };
 
+const VIOLET = "#a855f7";
+const RADIUS = 0; 
+
 export function PlexusBackground({
   count = 60,
   linkDistance = 140,
@@ -17,8 +20,12 @@ export function PlexusBackground({
   useEffect(() => {
     const canvas = ref.current!;
     const ctx = canvas.getContext("2d")!;
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let w = 0, h = 0, raf = 0;
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    let w = 0,
+      h = 0,
+      raf = 0;
     let nodes: Node[] = [];
 
     const resize = () => {
@@ -36,33 +43,31 @@ export function PlexusBackground({
       }));
     };
 
-    const draw = () => {
-      ctx.clearRect(0, 0, w, h);
-      const color = getComputedStyle(canvas).color; 
+    // Draws the whole plexus once in the given color
+    const drawScene = (
+      color: string,
+      triangles: Uint32Array,
+      triAlpha: number,
+    ) => {
       ctx.fillStyle = color;
       ctx.strokeStyle = color;
 
-      if (!reduceMotion) {
-        for (const n of nodes) {
-          n.x += n.vx; n.y += n.vy;
-          if (n.x < 0 || n.x > w) n.vx *= -1;
-          if (n.y < 0 || n.y > h) n.vy *= -1;
-        }
-      }
-
       // Triangle faces
-      const { triangles } = Delaunay.from(nodes, (n) => n.x, (n) => n.y);
-      ctx.globalAlpha = 0.05;
+      ctx.globalAlpha = triAlpha;
       for (let i = 0; i < triangles.length; i += 3) {
-        const a = nodes[triangles[i]], b = nodes[triangles[i + 1]], c = nodes[triangles[i + 2]];
+        const a = nodes[triangles[i]],
+          b = nodes[triangles[i + 1]],
+          c = nodes[triangles[i + 2]];
         const maxEdge = Math.max(
           Math.hypot(a.x - b.x, a.y - b.y),
           Math.hypot(b.x - c.x, b.y - c.y),
-          Math.hypot(c.x - a.x, c.y - a.y)
+          Math.hypot(c.x - a.x, c.y - a.y),
         );
         if (maxEdge > linkDistance * 1.5) continue; // skip huge edge-of-screen faces
         ctx.beginPath();
-        ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.lineTo(c.x, c.y);
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.lineTo(c.x, c.y);
         ctx.closePath();
         ctx.fill();
       }
@@ -70,7 +75,10 @@ export function PlexusBackground({
       // Links
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
-          const d = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
+          const d = Math.hypot(
+            nodes[i].x - nodes[j].x,
+            nodes[i].y - nodes[j].y,
+          );
           if (d < linkDistance) {
             ctx.globalAlpha = (1 - d / linkDistance) * 0.35;
             ctx.beginPath();
@@ -90,15 +98,58 @@ export function PlexusBackground({
       }
 
       ctx.globalAlpha = 1;
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, w, h);
+
+      if (!reduceMotion) {
+        for (const n of nodes) {
+          n.x += n.vx;
+          n.y += n.vy;
+          if (n.x < 0 || n.x > w) n.vx *= -1;
+          if (n.y < 0 || n.y > h) n.vy *= -1;
+        }
+      }
+
+      const { triangles } = Delaunay.from(
+        nodes,
+        (n) => n.x,
+        (n) => n.y,
+      );
+
+      // Whole plexus in the theme color
+      drawScene(getComputedStyle(canvas).color, triangles, 0.05);
+
+      const el = document.getElementById("contact");
+      if (el) {
+        const r = el.getBoundingClientRect();
+        if (r.bottom > 0 && r.top < h) {
+          ctx.save();
+          ctx.beginPath();
+          if (ctx.roundRect) ctx.roundRect(r.left, r.top, r.width, r.height, RADIUS);
+          else ctx.rect(r.left, r.top, r.width, r.height);
+          ctx.globalAlpha = 1;
+          ctx.fillStyle = "#000";
+          ctx.fill();
+          ctx.clip();
+          drawScene(VIOLET, triangles, 0.12);
+          ctx.restore();
+        }
+      }
+
       if (!reduceMotion) raf = requestAnimationFrame(draw);
     };
 
     resize();
     draw();
     window.addEventListener("resize", resize);
+    if (reduceMotion) window.addEventListener("scroll", draw, { passive: true });
+
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
+      window.removeEventListener("scroll", draw);
     };
   }, [count, linkDistance]);
 
